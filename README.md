@@ -1,1 +1,1 @@
-Time Series Clustering with an EM algorithm for Mixtures of Linear Gaussian State Space Models (accepted by Pattern Recognit in 2023)
+# Time Series Clustering with General State Space Models via Stochastic Variational Inference

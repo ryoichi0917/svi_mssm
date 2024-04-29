@@ -127,7 +127,8 @@ class BiLSTM_Infer_Cluster(nn.Module):
 
         # Forward propagate LSTM
         _, (h_n, _) = self.lstm(x, (h0, c0))  # Only the last hidden state is used
-        h_n = h_n.view(batch_size, -1)  # Reshape the final hidden state
+        h_n = h_n.permute(1, 2, 0)#(2*self.num_layers, BS, self.hidden_dim)→(BS, self.hidden_dim, 2*self.num_layers)
+        h_n = h_n[:, :, -2:].reshape(h_n.shape[0], -1)#shape(BS, 2*self.hidden_dim)
         h_n = self.fc(h_n)  # Pass through the linear layer
         h_n = self.sm(h_n)  # Apply softmax to get probabilities
 
@@ -259,9 +260,6 @@ class BiLSTM_Multi_Cluster(nn.Module):
         # Stack outputs along a new dimension for each cluster
         return torch.stack(flow_input_list, dim=1)
 
-
-import torch
-import torch.nn as nn
 
 class LSTM_Embedder(nn.Module):
     """

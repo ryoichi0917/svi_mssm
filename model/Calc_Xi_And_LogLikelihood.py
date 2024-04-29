@@ -3,7 +3,7 @@ import torch.nn as nn
 
 class Calc_Xi_And_LogLikelihood(nn.Module):
     """
-    A PyTorch module that samples from a given distribution defined by mean (mu) and standard
+    A module that samples from a given distribution defined by mean (mu) and standard
     deviation (sigma), and computes the log likelihood of the samples. This operation is
     commonly used in variational inference methods to enable gradient backpropagation through
     stochastic nodes.

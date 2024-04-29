@@ -4,13 +4,10 @@ import torch.nn as nn
 class BiLSTM_Base(nn.Module):
     """
     A Bidirectional LSTM (BiLSTM) neural network module for embedding input data
-    with shared weights across layers. This class initializes a BiLSTM that can
-    operate with multiple layers and on GPU if specified.
-
+    with shared weights across layers.
     Attributes:
         input_dim (int): Dimensionality of the input feature space.
         hidden_dim (int): Dimensionality of the hidden state per LSTM direction.
-                          The total hidden states for both directions is twice this number.
         num_layers (int): Number of LSTM layers stacked together.
         GPU (bool): Flag to determine whether to use GPU acceleration.
     """
@@ -22,8 +19,7 @@ class BiLSTM_Base(nn.Module):
 
         Parameters:
             input_dim (int): The dimension of the input feature vector.
-            hidden_dim (int): The dimension of the LSTM's hidden layers. The LSTM will actually have 
-                              `hidden_dim / 2` hidden units per direction due to bidirectionality.
+            hidden_dim (int): The dimension of the LSTM's hidden layers.
             num_layers (int): The number of LSTM layers to be stacked.
             GPU (bool): Whether to utilize CUDA-capable GPUs for processing. Defaults to False.
         """
@@ -40,15 +36,13 @@ class BiLSTM_Base(nn.Module):
 
     def forward(self, x):
         """
-        Defines the forward pass of the BiLSTM.
-
-        Parameters:
+        Input:
             x (Tensor): The input tensor containing features. Expected shape is
                         (batch_size, sequence_length, input_dim).
 
         Returns:
             Tensor: Output from the BiLSTM layer. The shape of the output tensor is
-                    (batch_size, sequence_length, 2 * hidden_dim) due to bidirectionality.
+                    (batch_size, sequence_length, hidden_dim).
         """
         batch_size = x.shape[0]
         h0 = torch.zeros(self.num_layers * 2, batch_size, self.hidden_dim)  # Initial hidden state
@@ -71,8 +65,7 @@ class BiLSTM_Infer_Cluster(nn.Module):
 
     Attributes:
         input_dim (int): Dimension of the input feature space.
-        hidden_dim (int): Dimension of the hidden state per LSTM direction. The total hidden
-                          states for both directions is twice this number.
+        hidden_dim (int): Dimension of the hidden state per LSTM direction.
         num_layers (int): Number of LSTM layers stacked together.
         num_clusters (int): Number of clusters to estimate.
         GPU (bool): Flag to determine whether to use GPU acceleration.
@@ -85,8 +78,7 @@ class BiLSTM_Infer_Cluster(nn.Module):
 
         Parameters:
             input_dim (int): The dimension of the input feature vector.
-            hidden_dim (int): The dimension of the LSTM's hidden layers. The LSTM will actually have
-                              `hidden_dim / 2` hidden units per direction due to bidirectionality.
+            hidden_dim (int): The dimension of the LSTM's hidden layers.
             num_layers (int): The number of LSTM layers to be stacked.
             num_clusters (int): The number of clusters for the clustering layer.
             GPU (bool): Whether to utilize CUDA-capable GPUs for processing. Defaults to False.
@@ -107,9 +99,7 @@ class BiLSTM_Infer_Cluster(nn.Module):
 
     def forward(self, x):
         """
-        Defines the forward pass of the BiLSTM with clustering.
-
-        Parameters:
+        Input:
             x (Tensor): The input tensor containing features. Expected shape is
                         (batch_size, sequence_length, input_dim).
 
@@ -196,7 +186,7 @@ class BiLSTM_Multi_Cluster(nn.Module):
     """
     A neural network module that embeds input data using multiple Bidirectional LSTM (BiLSTM) models,
     each corresponding to a different cluster. Each cluster model outputs estimates of mu and sigma
-    for that cluster. The module handles multiple sequences and outputs a set of parameters for each cluster.
+    for that cluster.
 
     Attributes:
         input_dim (int): Dimension of the input features.
@@ -205,7 +195,7 @@ class BiLSTM_Multi_Cluster(nn.Module):
                           of the estimated parameters mu and sigma.
         num_lstm_layers (int): Number of LSTM layers in each cluster model.
         num_clusters (int): Number of distinct clusters/models to be estimated.
-        tgt (bool): A flag or setting used in each cluster-specific LSTM model (purpose should be specified by user).
+        tgt (str): Target parameter to estimate, either "mu" or "sigma".
         GPU (bool): Flag to determine whether to use GPU acceleration.
     """
     
@@ -220,7 +210,7 @@ class BiLSTM_Multi_Cluster(nn.Module):
             output_dim (int): The output dimension from the LSTM, typically the size needed for mu and sigma.
             num_lstm_layers (int): The number of LSTM layers in each cluster's model.
             num_clusters (int): The number of clusters to model.
-            tgt (bool): Target-related flag or parameter passed to each LSTM model.
+            tgt (str): Target parameter to estimate, either "mu" or "sigma".
             GPU (bool): Whether to utilize CUDA-capable GPUs for processing. Defaults to False.
         """
         super(BiLSTM_Multi_Cluster, self).__init__()
